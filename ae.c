@@ -383,7 +383,6 @@ static int processTimeEvents(aeEventLoop *eventLoop) {
  * if flags has AE_CALL_BEFORE_SLEEP set, the beforesleep callback is called.
  *
  * The function returns the number of events processed. */
-#include "perftest.h"
 int aeProcessEvents(aeEventLoop *eventLoop, int flags)
 {
     struct timeval begin_time, end_time;
@@ -444,10 +443,6 @@ int aeProcessEvents(aeEventLoop *eventLoop, int flags)
         if (eventLoop->beforesleep != NULL && flags & AE_CALL_BEFORE_SLEEP)
             eventLoop->beforesleep(eventLoop);
 
-#if PERF_TEST2 // TODO
-        gettimeofday(&begin_time, NULL);
-#endif
-
         /* Call the multiplexing API, will return only on timeout or when
          * some event fires. */
         numevents = aeApiPoll(eventLoop, tvp);
@@ -485,14 +480,6 @@ int aeProcessEvents(aeEventLoop *eventLoop, int flags)
              * Fire the readable event if the call sequence is not
              * inverted. */
             if (!invert && fe->mask & mask & AE_READABLE) {
-#if PERF_TEST2 // TODO
-                gettimeofday(&end_time, NULL);
-                cnt2++;
-                print_time(begin_time, end_time, cnt2, &time_total2, "chcore epoll read");
-#endif
-#if PERF_TEST3 // TODO
-                gettimeofday(&begin_time, NULL);
-#endif
                 fe->rfileProc(eventLoop,fd,fe->clientData,mask);
                 fired++;
                 fe = &eventLoop->events[fd]; /* Refresh in case of resize. */
@@ -502,22 +489,7 @@ int aeProcessEvents(aeEventLoop *eventLoop, int flags)
             /* Fire the writable event. */
             if (fe->mask & mask & AE_WRITABLE) {
                 if (!fired || fe->wfileProc != fe->rfileProc) {
-#if PERF_TEST5 // TODO
-                    gettimeofday(&begin_time, NULL);
-#endif
-
                     fe->wfileProc(eventLoop, fd, fe->clientData, mask);
-
-#if PERF_TEST5// TODO
-                    gettimeofday(&end_time, NULL);
-                    cnt3++;
-                    print_time(begin_time, end_time, cnt3, &time_total3, "read handler");
-#endif
-#if PERF_TEST2 // TODO
-                    gettimeofday(&end_time, NULL);
-                    cnt4++;
-                    print_time(begin_time, end_time, cnt4, &time_total4, "chcore epoll write");
-#endif
                     fired++;
                 }
             }

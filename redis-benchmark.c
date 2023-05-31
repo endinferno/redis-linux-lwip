@@ -453,10 +453,6 @@ static void clientDone(client c) {
 static void readHandler(aeEventLoop *el, int fd, void *privdata, int mask) {
     struct timeval begin_time, end_time;
 
-#if PERF_TEST4 // TODO
-    gettimeofday(&begin_time, NULL);
-#endif
-
     client c = privdata;
     void *reply = NULL;
     UNUSED(el);
@@ -554,12 +550,6 @@ static void readHandler(aeEventLoop *el, int fd, void *privdata, int mask) {
             }
         }
     }
-#if PERF_TEST4 // TODO
-    gettimeofday(&end_time, NULL);
-    cnt1++;
-    print_time(begin_time, end_time, cnt1, &time_total1,
-               "read handler");
-#endif
 }
 
 
@@ -590,17 +580,7 @@ static void writeHandler(aeEventLoop *el, int fd, void *privdata, int mask) {
     }
     if (sdslen(c->obuf) > c->written) {
         void *ptr = c->obuf+c->written;
-
-#if PERF_TEST1 // TODO
-        gettimeofday(&begin_time, NULL);
-#endif
         ssize_t nwritten = write(c->context->fd,ptr,sdslen(c->obuf)-c->written);
-#if PERF_TEST1 // TODO
-        gettimeofday(&end_time, NULL);
-        cnt1++;
-        print_time(begin_time, end_time, cnt1, &time_total1,
-             "write to network");
-#endif
 
         if (nwritten == -1) {
             if (errno != EPIPE)
@@ -662,32 +642,9 @@ static client createClient(char *cmd, size_t len, client from, int thread_id) {
             port = node->port;
             c->cluster_node = node;
         }
-#if PERF_TEST3 // TODO
-        gettimeofday(&begin_time, NULL);
-#endif
-
         c->context = redisConnectNonBlock(ip,port);
-
-#if PERF_TEST3 // TODO
-        gettimeofday(&end_time, NULL);
-        cnt3++;
-        print_time(begin_time, end_time, cnt3, &time_total3,
-                   "connect");
-#endif
     } else {
-
-#if PERF_TEST3 // TODO
-        gettimeofday(&begin_time, NULL);
-#endif
-
         c->context = redisConnectUnixNonBlock(config.hostsocket);
-
-#if PERF_TEST3 // TODO
-        gettimeofday(&end_time, NULL);
-        cnt3++;
-        print_time(begin_time, end_time, cnt3, &time_total3,
-                   "connect");
-#endif
     }
     if (c->context->err) {
         fprintf(stderr,"Could not connect to Redis at ");
