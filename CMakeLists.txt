@@ -1,5 +1,10 @@
 cmake_minimum_required(VERSION 3.16)
+
+set(CMAKE_C_COMPILER "/nvme/chcore/compile-benchmark-in-musl/aarch64-linux-musl-cross/bin/aarch64-linux-musl-gcc")
+set(CMAKE_CXX_COMPILER "/nvme/chcore/compile-benchmark-in-musl/aarch64-linux-musl-cross/bin/aarch64-linux-musl-g++")
+
 project(redis)
+
 set(CMAKE_EXE_LINKER_FLAGS "-static")
 
 add_subdirectory(deps/hiredis)
