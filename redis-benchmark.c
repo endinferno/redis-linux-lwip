@@ -1523,19 +1523,7 @@ int test_is_selected(char *name) {
     return strstr(config.tests,buf) != NULL;
 }
 
-// static void bind_to_cpu(int cpuid)
-// {
-//         cpu_set_t mask;
-//         CPU_ZERO(&mask);
-//         CPU_SET(cpuid, &mask);
-//         sched_setaffinity(0, sizeof(mask), &mask);
-//         sched_yield();
-// }
-
 int main(int argc, const char **argv) {
-    // bind_to_cpu(3);
-
-    // sched_yield();
     int i;
     char *data, *cmd;
     int len;
