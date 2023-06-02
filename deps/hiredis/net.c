@@ -284,7 +284,10 @@ int redisCheckConnectDone(redisContext *c, int *completed) {
     case EALREADY:
     case EINPROGRESS:
     case EWOULDBLOCK:
-        *completed = 0;
+	// LwIP and Linux set the same errno, but Linux will set errno back
+	// to 0 before return, so I just modify redis benchmark rather than
+	// LwIP
+	*completed = 1;
         return REDIS_OK;
     default:
         return REDIS_ERR;
